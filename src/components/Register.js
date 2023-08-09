@@ -1,6 +1,6 @@
 import React from 'react'
 import {Formik, Form, Field, ErrorMessage} from 'formik'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate ,Link} from 'react-router-dom'
 import RegisterUser from '../apis/RegisterUser'
 
 function Register() {
@@ -71,6 +71,7 @@ function Register() {
 
               
              </Formik>
+             <Link to='/login'>Already a user ? </Link>
 
     </div>
   )
