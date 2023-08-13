@@ -1,20 +1,36 @@
-import './chats.css'
+import "./chats.css";
 import React from "react";
+import { useState } from "react";
 
 function Chats(props) {
-  function handleClick()
+  async function handleClick() {
+    props.getMessages(props.chatid, props.chatname);
+  }
+
+  let [deleted , setDeleted] = useState(false)
+
+  function handleDelete()
   {
-     props.getMessages(props.chatid , props.chatname)
+    setDeleted(true)
+    props.deleteChat(props.chatid)
   }
   return (
     <div>
+      { !deleted && 
       <div className="card">
         <ul className="list-group list-group-flush">
-          <div className="container">
-          <li className="list-group-item" onClick={handleClick}>{props.chatid}    {props.chatname}</li>
-          </div>
+
+            <li className="list-group-item chatlist" >
+              <div className="container">
+                <button className="chat" onClick={handleClick}>
+                  {props.chatname === '' ? "<No Name>":props.chatname}
+                </button>
+                <button className="btn btn-danger chatbtn " onClick={handleDelete}>Delete</button>
+              </div>
+            </li>
         </ul>
       </div>
+     }
     </div>
   );
 }

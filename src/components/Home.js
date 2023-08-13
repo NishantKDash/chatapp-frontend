@@ -4,14 +4,15 @@ import { Link } from "react-router-dom";
 import GetChat from "../apis/GetChat";
 import Chats from "./Chats";
 import GetMessages from "../apis/GetMessages";
-import { createClient, disconnect } from "../apis/SendChat";
+import { activate, deactivate, subscribe } from "../apis/SendChat";
+import DeleteChat from "../apis/DeleteChat";
 
 function Home() {
   let [chats, setChats] = useState([]);
-  let [currChat, setCurrChat] = useState({});
   let [visible, setVisible] = useState(false);
-  let [client, setClient] = useState();
   let vchats = [];
+  let [currChat,setcurrChat] = useState({})
+
 
   useEffect(() => {
     GetChat(localStorage.getItem("username"))
@@ -20,26 +21,39 @@ function Home() {
           vchats.push({ id: res.data.chatids[i], name: res.data.chatnames[i] });
         }
         setChats(vchats);
+        activate();
       })
       .catch((e) => console.log(e));
   }, []);
 
   function handleLogout() {
+    deactivate();
     localStorage.clear();
   }
 
-  async function getMessages(chatid, chatname) {
-    await GetMessages(chatid)
-      .then((res) => {
-        setCurrChat({ id: chatid, name: chatname, messages: res.data });
-        setVisible(true);
-        if (client !== undefined) {
-          disconnect(client);
-        }
-         console.log(currChat)
-          setClient(createClient(chatid, currChat, setCurrChat));
-      })
-      .catch((e) => console.log(e));
+  useEffect(()=>{
+    if(JSON.stringify(currChat) !== "{}")
+    {
+      setVisible(true)
+      subscribe(currChat.id , currChat , setcurrChat , setVisible);
+      console.log('subscribed')
+    }
+  },[currChat])
+
+  function getMessages(chatid, chatname) {
+    GetMessages(chatid)
+          .then((res) => {
+            setcurrChat({
+              id: chatid,
+              name: chatname,
+              messages: res.data,
+            });})
+            .catch(e=>alert(e))
+  }
+
+   function deleteChat(chatid)
+  {
+      DeleteChat(chatid).then().catch(e=>console.log(e))
   }
   return (
     <div className="container">
@@ -61,6 +75,7 @@ function Home() {
                     chatname={chat.name}
                     chatid={chat.id}
                     getMessages={getMessages}
+                    deleteChat = {deleteChat}
                   ></Chats>
                 </div>
               );
@@ -69,7 +84,7 @@ function Home() {
         </div>
         <div className="col-lg">
           <h3>Messages</h3>
-          {visible && <Message currChat={currChat} client={client}></Message>}
+          {visible && <Message currChat={currChat}></Message>}
         </div>
       </div>
     </div>

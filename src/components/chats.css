@@ -1,4 +1,23 @@
-li:hover{
+.chat:hover{
     background-color: yellow;
     cursor:pointer
+}
+
+.chat{
+    border-radius: 25px;
+}
+
+body{font-family: 'Poppins', sans-serif;}
+
+.chatbtn{
+    border-radius: 50px;
+    font-size: 10px;
+    margin-left: 10px;
+    background-color: rgb(255, 144, 144);
+    color: black;
+}
+
+.chatlist{
+    background-color:bisque;
+    border:none
 }
