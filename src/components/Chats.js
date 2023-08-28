@@ -20,7 +20,7 @@ function Chats(props) {
       <div className="card">
         <ul className="list-group list-group-flush">
 
-            <li className="list-group-item chatlist" >
+            <li className="list-group-item chatlist" key = {props.chatid}>
               <div className="container">
                 <button className="chat" onClick={handleClick}>
                   {props.chatname === '' ? "<No Name>":props.chatname}

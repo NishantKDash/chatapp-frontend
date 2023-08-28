@@ -5,7 +5,7 @@ function SingleMessage(props) {
     <div>
       <div className="card">
         <ul className="list-group list-group-flush">
-          <li className="list-group-item">{localStorage.getItem('username') === props.message.username ? 'You' : props.message.username}- {props.message.message}</li>
+          <li className="list-group-item" >{localStorage.getItem('username') === props.message.username ? 'You' : props.message.username}- {props.message.message}</li>
         </ul>
       </div>
     </div>

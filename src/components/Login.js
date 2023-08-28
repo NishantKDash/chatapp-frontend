@@ -2,6 +2,7 @@ import React ,{useState} from 'react'
 import Notification from './Notification';
 import { useNavigate , Link } from 'react-router-dom';
 import LoginApi from '../apis/LoginApi';
+import { useEffect } from 'react';
 
 function Login() {
 
@@ -10,6 +11,9 @@ function Login() {
     const [flag , setFlag] = useState(-1);
     const [message , setMessage] = useState("");
     const navigate = useNavigate();
+  
+
+    useEffect(()=>{if(localStorage.getItem('username') != null){navigate('/home')}},[])
     function handlePChange(e)
     {
        setUsername(e.target.value);
@@ -42,6 +46,7 @@ function Login() {
         }
         catch(e)
         {
+          console.log(e)
             console.log(e.response)
             if(e.response.status === 403)
             {

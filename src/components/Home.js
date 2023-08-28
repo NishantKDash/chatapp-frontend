@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Message from "./Message";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GetChat from "../apis/GetChat";
 import Chats from "./Chats";
 import GetMessages from "../apis/GetMessages";
-import { activate, deactivate, subscribe } from "../apis/SendChat";
+import { subscribe ,subscribeNotification, subscribeSignalling} from "../apis/SendChat";
 import DeleteChat from "../apis/DeleteChat";
 
 function Home() {
@@ -12,6 +12,9 @@ function Home() {
   let [visible, setVisible] = useState(false);
   let vchats = [];
   let [currChat,setcurrChat] = useState({})
+  let [load , setLoad] = useState(false)
+  let [incomingCall , setIncomingCall] = useState({group:{}, media:'' , current:false})
+  let navigate = useNavigate()
 
 
   useEffect(() => {
@@ -21,13 +24,12 @@ function Home() {
           vchats.push({ id: res.data.chatids[i], name: res.data.chatnames[i] });
         }
         setChats(vchats);
-        activate();
+        subscribeNotification(setIncomingCall)
       })
       .catch((e) => console.log(e));
-  }, []);
+  }, [load]);
 
   function handleLogout() {
-    deactivate();
     localStorage.clear();
   }
 
@@ -36,7 +38,7 @@ function Home() {
     {
       setVisible(true)
       subscribe(currChat.id , currChat , setcurrChat , setVisible);
-      console.log('subscribed')
+   
     }
   },[currChat])
 
@@ -53,7 +55,17 @@ function Home() {
 
    function deleteChat(chatid)
   {
-      DeleteChat(chatid).then().catch(e=>console.log(e))
+      DeleteChat(chatid).then(setVisible(false)).catch(e=>console.log(e))
+  }
+
+  function rejectCall()
+  {
+    setIncomingCall({group:'', media:'' , current:false})
+  }
+
+  function acceptCall()
+  {
+    navigate(`/room/${incomingCall.group.id}`)
   }
   return (
     <div className="container">
@@ -61,6 +73,7 @@ function Home() {
       <Link to="/logout" onClick={handleLogout}>
         Logout
       </Link>
+      { incomingCall.current && <div className="container"><b>Incoming {incomingCall.media} Call from group {incomingCall.group.name}</b><button className="btn btn-primary mx-2" onClick={acceptCall}>Accept</button><button className="btn btn-danger mx-2" onClick={rejectCall}>Reject</button></div>}
       <div className="row">
         <div className="col-sm">
           <div>
@@ -68,7 +81,7 @@ function Home() {
               <Link to={"/createGroup"}>Create a new Group</Link>
             </nav>
             <h3>Your Chats</h3>
-            {chats.map(function (chat) {
+            {chats.map(function (chat , idx) {
               return (
                 <div className="container my-3">
                   <Chats

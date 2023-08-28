@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {Formik, Form, Field, ErrorMessage} from 'formik'
 import {useNavigate ,Link} from 'react-router-dom'
 import RegisterUser from '../apis/RegisterUser'
@@ -6,6 +6,10 @@ import RegisterUser from '../apis/RegisterUser'
 function Register() {
 
   const navigate = useNavigate()
+
+  useEffect(()=>{
+    if(localStorage.getItem('username') != null){navigate('/home')}
+  },[])
   function onSubmit(values)
   {
    
